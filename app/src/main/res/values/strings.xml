@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">webView</string>
+    <string name="no_connection">Sem conexão, tente novamente</string>
+    <string name="btn_refresh">Tentar novamente</string>
 </resources>
