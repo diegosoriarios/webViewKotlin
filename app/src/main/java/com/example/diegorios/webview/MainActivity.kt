@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         cd = CheckNet()
-        if (!cd.isConnectingToInternet(this@MainActivity)) {
+        if (cd.isConnectingToInternet(this@MainActivity)) {
             setContentView(R.layout.activity_main)
             mywebview = findViewById<WebView>(R.id.webview)
             mywebview!!.webViewClient = object : WebViewClient() {
