@@ -3,10 +3,18 @@ package com.example.diegorios.webview
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import com.androindian.raj.imei.CheckNet
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
+import android.R.id.message
+import android.util.Log
+import android.webkit.ConsoleMessage
+import android.webkit.WebChromeClient
+
 
 
 
@@ -32,7 +40,24 @@ class MainActivity : AppCompatActivity() {
             }
 
             mywebview!!.settings.javaScriptEnabled = true
-            mywebview!!.loadUrl("https://admin:admin@ccstore-prod-zdoa.oracleoutsourcing.com")
+
+            val url = "https://diegosoriarios.github.io"
+            val settings = mywebview!!.settings
+            settings.domStorageEnabled = true
+
+            //Console.log
+            mywebview!!.webChromeClient = object : WebChromeClient() {
+                override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+                    Log.d(
+                        "MyApplication", consoleMessage.message() + " -- From line "
+                                + consoleMessage.lineNumber() + " of "
+                                + consoleMessage.sourceId()
+                    )
+                    return super.onConsoleMessage(consoleMessage)
+                }
+            }
+
+            mywebview!!.loadUrl(url)
 
         } else {
             val intent = Intent(this, NoNetwork::class.java)
