@@ -14,8 +14,10 @@ import android.R.id.message
 import android.util.Log
 import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
-
-
+import android.provider.Settings.Secure
+import android.view.KeyEvent
+import com.pushio.manager.PushIOManager
+import java.security.AccessController.getContext
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +31,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         cd = CheckNet()
+        /*
+         * Check network connectivity
+         */
         if (cd.isConnectingToInternet(this@MainActivity)) {
             setContentView(R.layout.activity_main)
             mywebview = findViewById<WebView>(R.id.webview)
@@ -39,11 +44,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+
+
+            val androidId:String = Secure.getString(getContentResolver(), Secure.ANDROID_ID)
+            val url = "https://admin:admin@ccstore-prod-zdoa.oracleoutsourcing.com"
+            val settings = mywebview!!.settings
+
+            settings.domStorageEnabled = true
             mywebview!!.settings.javaScriptEnabled = true
 
-            val url = "https://diegosoriarios.github.io"
-            val settings = mywebview!!.settings
-            settings.domStorageEnabled = true
+            PushIOManager.getInstance(applicationContext).registerApp()
+            PushIOManager.getInstance(applicationContext).registerUserId(androidId)
+            Log.d("deviceID", PushIOManager.getInstance(applicationContext).registeredUserId)
+            mywebview!!.loadUrl(url)
 
             //Console.log
             mywebview!!.webChromeClient = object : WebChromeClient() {
@@ -56,15 +69,25 @@ class MainActivity : AppCompatActivity() {
                     return super.onConsoleMessage(consoleMessage)
                 }
             }
-
-            mywebview!!.loadUrl(url)
-
         } else {
             val intent = Intent(this, NoNetwork::class.java)
             startActivity(intent)
             //Toast.makeText(applicationContext,
             //    "no net", Toast.LENGTH_LONG).show()
         }
+    }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if(event?.action == KeyEvent.ACTION_DOWN) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_BACK ->
+                    if(mywebview!!.canGoBack()) {
+                        mywebview!!.goBack()
+                    } else {
+                        finish()
+                    }
+            }
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }
